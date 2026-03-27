@@ -1,0 +1,106 @@
+<app-header></app-header>
+<div class="videos-container">
+  <!-- Header -->
+  <div class="videos-header">
+    <button class="back-btn" (click)="goBack()">← Back</button>
+    <button
+      class="add-btn"
+      *ngIf="!showForm && !editingVideo"
+      (click)="showForm = true"
+    >
+      + Add Video
+    </button>
+  </div>
+
+  <!-- No Videos -->
+  <div *ngIf="videos.length === 0" class="no-videos-container">
+    <h2>No videos uploaded yet. Click 'Add Video' to see them</h2>
+  </div>
+
+  <!-- Add Video Form -->
+  <div class="video-form" *ngIf="showForm">
+    <h3 class="form-title">New Video</h3>
+
+    <label class="form-label">Title</label>
+    <input placeholder="Lecture title *" [(ngModel)]="newVideo.title" />
+
+    <label class="form-label">Video File</label>
+    <input
+      type="file"
+      class="file-input"
+      accept="video/*"
+      (change)="onVideoFileChange($event)"
+    />
+
+    <div class="form-actions">
+      <button class="save-btn" (click)="onAddVideo()" [disabled]="isUploading">
+        {{ isUploading ? "Uploading..." : "Save Video" }}
+      </button>
+      <button class="cancel-btn" (click)="showForm = false">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Edit Video Form -->
+  <div class="video-form" *ngIf="editingVideo">
+    <h3 class="form-title">Edit Video</h3>
+
+    <label class="form-label">Title</label>
+    <input placeholder="Lecture title *" [(ngModel)]="editingVideo.title" />
+
+    <label class="form-label">Replace Video File (optional)</label>
+    <input
+      type="file"
+      class="file-input"
+      accept="video/*"
+      (change)="onVideoFileChange($event, true)"
+    />
+
+    <div class="form-actions">
+      <button
+        class="save-btn"
+        (click)="onUpdateVideo()"
+        [disabled]="isUploading"
+      >
+        {{ isUploading ? "Uploading..." : "Update Video" }}
+      </button>
+      <button class="cancel-btn" (click)="onCancelEdit()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Video Grid -->
+  <div class="video-grid" *ngIf="!editingVideo && !showForm">
+    <div class="video-card" *ngFor="let video of videos">
+      <video [src]="video.url" controls class="video-player"></video>
+      <div class="video-body">
+        <h4 class="video-title">{{ video.title }}</h4>
+        <div class="card-actions">
+          <button class="edit-btn" (click)="onEditVideo($event, video)">
+            ✏️ Edit
+          </button>
+          <button class="delete-btn" (click)="onDeleteClick($event, video)">
+            🗑 Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Popup -->
+<div class="popup-overlay" *ngIf="showDeletePopup">
+  <div class="popup-box">
+    <div class="popup-icon">⚠️</div>
+    <h3>Delete Video?</h3>
+    <p>
+      You are about to delete
+      <strong style="color: #eef0f7">{{ videoToDelete?.title }}</strong
+      >. This cannot be undone.
+    </p>
+    <div class="popup-actions">
+      <button class="popup-cancel" (click)="onCancelDelete()">Cancel</button>
+      <button class="popup-confirm" (click)="onConfirmDelete()">
+        Yes, Delete
+      </button>
+    </div>
+  </div>
+</div>

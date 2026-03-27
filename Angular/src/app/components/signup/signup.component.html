@@ -1,0 +1,124 @@
+<div class="signup-container">
+  <h2 class="signup-title">Create Account</h2>
+
+  <form (ngSubmit)="onSignup(signupForm)" #signupForm="ngForm" novalidate>
+
+    <!-- Full Name -->
+    <div class="form-group">
+      <label for="fullName">Full Name</label>
+      <input
+        id="fullName"
+        type="text"
+        class="input-field"
+        [(ngModel)]="fullName"
+        name="fullName"
+        placeholder="John Doe"
+        required
+        #fullNameRef="ngModel"
+      />
+      <span class="error-message" *ngIf="fullNameRef.invalid && fullNameRef.touched">
+        Full name is required.
+      </span>
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input
+        id="email"
+        type="email"
+        class="input-field"
+        [(ngModel)]="email"
+        name="email"
+        placeholder="you@example.com"
+        required
+        email
+        #emailRef="ngModel"
+      />
+      <span class="error-message" *ngIf="emailRef.invalid && emailRef.touched">
+        Please enter a valid email.
+      </span>
+    </div>
+
+    <!-- Phone Number -->
+    <div class="form-group">
+      <label for="phoneNumber">Phone Number <span class="optional">(optional)</span></label>
+      <input
+        id="phoneNumber"
+        type="tel"
+        class="input-field"
+        [(ngModel)]="phoneNumber"
+        name="phoneNumber"
+        placeholder="+1 (555) 000-0000"
+      />
+    </div>
+
+    <!-- Gender -->
+    <div class="form-group">
+      <label for="gender">Gender <span class="optional">(optional)</span></label>
+      <select
+        id="gender"
+        class="input-field select-field"
+        [(ngModel)]="gender"
+        name="gender"
+      >
+        <option value="" disabled>Select gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        id="password"
+        type="password"
+        class="input-field"
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Min. 8 characters"
+        required
+        minlength="8"
+        #passwordRef="ngModel"
+      />
+      <span class="error-message" *ngIf="passwordRef.invalid && passwordRef.touched">
+        Password must be at least 8 characters.
+      </span>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label for="confirmPassword">Confirm Password</label>
+      <input
+        id="confirmPassword"
+        type="password"
+        class="input-field"
+        [class.input-error]="passwordMismatch"
+        [(ngModel)]="confirmPassword"
+        name="confirmPassword"
+        placeholder="Re-enter your password"
+        required
+      />
+      <span class="error-message" *ngIf="passwordMismatch">
+        Passwords do not match.
+      </span>
+    </div>
+
+    <!-- Submit -->
+    <button
+      type="submit"
+      class="submit-button"
+      [disabled]="signupForm.invalid || passwordMismatch || isLoading"
+    >
+      {{ isLoading ? 'Creating account…' : 'Create Account' }}
+    </button>
+
+  </form>
+
+  <!-- Switch to Login -->
+  <p class="switch-auth">
+    Already have an account?
+    <a class="switch-link" (click)="goToLogin()">Log in</a>
+  </p>
+</div>

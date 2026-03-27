@@ -1,0 +1,65 @@
+<div class="login-container">
+  <h2 class="login-title">Welcome Back</h2>
+
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        ngModel
+        placeholder="Enter email"
+        #email="ngModel"
+        required
+        email
+        class="input-field"
+      />
+
+      <div
+        *ngIf="email.invalid && (email.dirty || email.touched)"
+        class="error-message"
+      >
+        <div *ngIf="email.errors?.['required']">Email is required.</div>
+        <div *ngIf="email.errors?.['email']">
+          Please enter a valid email address.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        ngModel
+        placeholder="Enter password"
+        #password="ngModel"
+        required
+        minlength="6"
+        class="input-field"
+      />
+
+      <div
+        *ngIf="password.invalid && (password.dirty || password.touched)"
+        class="error-message"
+      >
+        <div *ngIf="password.errors?.['required']">Password is required.</div>
+        <div *ngIf="password.errors?.['minlength']">
+          Password must be at least 6 characters.
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="loginForm.invalid" class="submit-button">
+      Login
+    </button>
+  </form>
+
+  <!-- Switch to Signup -->
+  <p class="switch-auth">
+    Don't have an account?
+    <a class="switch-link" (click)="goToSignup()">Sign in</a>
+  </p>
+</div>
