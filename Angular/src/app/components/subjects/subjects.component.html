@@ -73,7 +73,7 @@
       (click)="onSelectSubject(subject.id)"
     >
       <img
-        [src]="'http://localhost:3500/' + subject.imageFile"
+        [src]="getImageUrl(subject.imageFile)"
         [alt]="subject.title"
         class="subject-image"
       />

@@ -12,14 +12,14 @@ interface SignupData {
   phoneNumber?: string | null;
 }
 
-interface LoginResponse {
-  token: string;
-}
+// interface LoginResponse {
+//   token: string;
+// }
 
 interface AuthResponse {
   message: string;
   user?: any;
-  success?: boolean;
+  token?: string;
 }
 
 @Injectable({
@@ -30,6 +30,10 @@ export class AuthService {
   private http = inject(HttpClient);
 
   private apiUrl = `${environment.apiUrl}/auth`; // backend url
+
+  storeToken(token: string) {
+    localStorage.setItem('token', token);
+  }
 
   signup(user: SignupData): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/signup`, user);

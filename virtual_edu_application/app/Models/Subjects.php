@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Subjects extends Model
 {
     public function videos() {
-        return $this->hasMany(Videos::class);
+        return $this->hasMany(Video::class, 'subject_id');
     }
 }

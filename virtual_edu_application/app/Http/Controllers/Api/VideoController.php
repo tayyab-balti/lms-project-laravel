@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Subjects;
 use App\Models\Video;
 use Illuminate\Http\Request;
 
@@ -25,13 +26,19 @@ class VideoController extends Controller
         return response()->json($video, 201);
     }
 
-    public function index(){
-        return Video::all();
+    public function index(Request $request){
+        if ($request->has('subjectId')) {
+            $videos = Video::where('subject_id', $request->subjectId)->get();
+            return response()->json($videos, 200);
+        }
+        return response()->json(Video::all(), 200);
     }
 
-    public function show(Video $videos)
+    public function show($subjectId)
     {
-        return $videos;
+        $subjects = Subjects::findOrFail($subjectId);
+        $videos = $subjects->videos;
+        return response()->json($videos,200);
     }
 
     

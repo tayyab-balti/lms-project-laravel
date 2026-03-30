@@ -6,6 +6,7 @@ import { Subject } from '../../core/models/subject.interface';
 import { SubjectVideosService } from '../../core/services/subject-videos.service';
 import { HeaderComponent } from '../header/header.component';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-subjects',
@@ -27,27 +28,40 @@ export class SubjectsComponent {
   // Delete popup
   showDeletePopup = false;
   subjectToDelete: Subject | null = null;
-  
-    // for edit / delete icons
-    openMenuId: number | null = null;
-  
+
+  // for edit / delete icons
+  openMenuId: number | null = null;
+
   constructor(
     private router: Router,
     private subjectService: SubjectVideosService,
     private toastr: ToastrService,
   ) {}
 
+  getImageUrl(imagePath: string): string {
+    if (!imagePath) return '';
+
+    // Both Node and Laravel store as 'public/uploads/filename.jpg'
+    // Laravel serves public/ directly so strip 'public/' prefix
+    const cleaned = imagePath.replace(/^public\//, '');
+    return `${environment.uploadsUrl}/${cleaned}`;
+  }
+
   // automatically runs when component loads
   ngOnInit(): void {
     this.subjectService
-      .getSubjects() // defines the stream
+      .getSubjects() //  Request subjects from backend
       .subscribe({
         // fires the HTTP request
         next: (data: Subject[]) => {
           // runs when response arrives
           // console.log(data)
-          this.subjects = data;
-          this.toastr.success('Data fetched successfully');
+          this.subjects = data; // Store the subjects in the component
+          if (data.length > 0) {
+            this.toastr.success('Data fetched successfully');
+          } else {
+            this.toastr.warning('No subjects found');
+          }
         },
         error: (error) => {
           console.error('Error fetching subjects:', error);
@@ -75,10 +89,10 @@ export class SubjectsComponent {
     }
   }
 
-toggleMenu(event: Event, subjectId: number) {
-  event.stopPropagation(); // Prevent card click
-  this.openMenuId = this.openMenuId === subjectId ? null : subjectId;
-}
+  toggleMenu(event: Event, subjectId: number) {
+    event.stopPropagation(); // Prevent card click
+    this.openMenuId = this.openMenuId === subjectId ? null : subjectId;
+  }
 
   // validations
   private isSubjectValid(subject: Partial<Subject>): boolean {
@@ -110,13 +124,16 @@ toggleMenu(event: Event, subjectId: number) {
 
     this.subjectService.createSubject(formData).subscribe({
       next: (created: Subject) => {
-        this.subjects.push(created);
+        this.subjects = [...this.subjects, created]; // ← spread triggers Angular change detection
         this.toastr.success('Subject added successfully');
         this.newSubject = { title: '', imageFile: '', description: '' }; // reset form
         this.selectedFile = null;
         this.showForm = false;
       },
-      error: (err) => console.error('Error creating subject:', err),
+      error: (err) => {
+        console.error('Error creating subject:', err);
+        this.toastr.error('Error creating subject');
+      },
     });
   }
 
@@ -142,15 +159,17 @@ toggleMenu(event: Event, subjectId: number) {
       .updateSubject(this.editingSubject.id, formData)
       .subscribe({
         next: (updated: Subject) => {
-          const index = this.subjects.findIndex((s) => s.id === updated.id);
-          this.subjects[index] = updated; // replace old with updated in array
-          this.editingSubject = null; // close edit form
+          // Replace old subject in array — spread triggers change detection
+          this.subjects = this.subjects.map((s) =>
+            s.id === updated.id ? updated : s,
+          );
+          this.editingSubject = null;
           this.selectedFile = null;
           this.toastr.success('Subject updated successfully');
         },
         error: (err) => {
-          (console.error('Error updating subject:', err),
-            this.toastr.error('Error updating subject'));
+          console.error('Error updating subject:', err);
+          this.toastr.error('Error updating subject');
         },
       });
   }

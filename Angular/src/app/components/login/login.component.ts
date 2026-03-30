@@ -15,21 +15,23 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {}
 
   onSubmit(loginForm: NgForm) {
     const { email, password } = loginForm.value;
 
     this.authService.login(email, password).subscribe({
-      next: (success) => { // runs when backend responds
-        if (success) {
-        this.toastr.success('Login successful');
-          loginForm.reset()
-          
+      next: (response) => {
+        // runs when backend responds
+        if (response && response.token) {
+          this.authService.storeToken(response.token);
+          this.toastr.success('Login successful');
+          loginForm.reset();
+
           setTimeout(() => {
-          this.router.navigate(['/subjects']);
-        }, 1000);
+            this.router.navigate(['/subjects']);
+          }, 1000);
         } else {
           this.toastr.warning('Invalid email or password');
         }
@@ -40,7 +42,7 @@ export class LoginComponent {
     });
   }
 
-  goToSignup(){
-    this.router.navigate(['/signup'])
+  goToSignup() {
+    this.router.navigate(['/signup']);
   }
 }

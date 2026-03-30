@@ -22,9 +22,11 @@ export class SubjectVideosService {
 
   // Subjects
   getSubjects(): Observable<Subject[]> {
+    
     return this.http.get<Subject[]>(this.subjectsUrl, {
       // headers: this.authHeaders,
     });
+
   }
 
   createSubject(formData: FormData): Observable<Subject> {

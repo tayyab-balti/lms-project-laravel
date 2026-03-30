@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Video extends Model
 {
-    public function subject() {
-        return $this->belongsTo(Subjects::class);
-    }
+    protected $fillable = [
+        'subject_id',
+        'title',
+        'video_url',
+    ];
 }
